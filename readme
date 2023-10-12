@@ -1,0 +1,51 @@
+Download the Files:
+
+Click on the distilbert-base-uncased from the search results.
+Scroll down to the section titled "Files" on the model page.
+Download the following files by right-clicking on the file name and selecting "Save link as...":
+config.json
+pytorch_model.bin
+vocab.txt
+Create Directory Structure:
+
+Create a directory on your local machine where you want to save the model and tokenizer files.
+Inside this directory, create two sub-directories: one for the model and one for the tokenizer.
+Name them appropriately, for example: distilbert_model and distilbert_tokenizer.
+Move Downloaded Files:
+
+Move the config.json and pytorch_model.bin files into the distilbert_model directory.
+Move the vocab.txt file into the distilbert_tokenizer directory.
+
+*** how to use **
+
+import torch
+from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
+
+# Load the tokenizer and model from the local files
+tokenizer = DistilBertTokenizer.from_pretrained("path_to_distilbert_tokenizer_directory")
+model = DistilBertForSequenceClassification.from_pretrained("path_to_distilbert_model_directory")
+
+def classify_text(text):
+    # Tokenize the text
+    inputs = tokenizer(text, truncation=True, padding=True, return_tensors="pt")
+    
+    # Get the model's output
+    with torch.no_grad():
+        outputs = model(**inputs)
+    
+    # Get the predicted label
+    predicted_label_idx = torch.argmax(outputs.logits, dim=1).item()
+    confidence = torch.nn.functional.softmax(outputs.logits, dim=1)[0, predicted_label_idx].item()
+    
+    return predicted_label_idx, confidence
+
+# Example usage:
+text = "Transformers are really powerful!"
+label, confidence = classify_text(text)
+print(f"Label: {label}, Confidence: {confidence}")
+
+In this script:
+
+The DistilBertTokenizer and DistilBertForSequenceClassification are loaded from the local directories where you saved the downloaded files.
+A classify_text function is defined, which takes a text string as input, tokenizes it, passes it through the model, and returns the predicted label index and confidence score.
+An example text string is classified, demonstrating how to use the classify_text function.
